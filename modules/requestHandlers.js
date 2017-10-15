@@ -1,4 +1,5 @@
-const querystring = require('querystring');
+const querystring = require('querystring'),
+    fs = require('fs');
 
 function start(res, postData) {
     console.log('request handler "start" was called');
@@ -9,9 +10,10 @@ function start(res, postData) {
     'charset=UTF-8" />'+
     '</head>'+
     '<body>'+
-    '<form action="/upload" method="post">'+
-    '<textarea name="text" rows="20" cols="60"></textarea>'+
-    '<input type="submit" value="Submit text" />'+
+    '<form action="/upload" enctype="multipart/form-data" '+
+    'method="post">'+
+    '<input type="file" name="upload">'+
+    '<input type="submit" value="Upload file" />'+
     '</form>'+
     '</body>'+
     '</html>';
@@ -28,5 +30,12 @@ function upload(res, postData) {
     res.end();
 }
 
+function show(res){
+    console.log('request handler "show" was called');
+    res.writeHead(200, {'Content-Type': 'image/png'});
+    fs.createReadStream('tmp/test.png').pipe(res);
+}
+
 exports.start = start;
 exports.upload = upload;
+exports.show = show;

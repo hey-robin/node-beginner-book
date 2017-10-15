@@ -4,7 +4,7 @@ console.log('server module');
 
 function start() {
     function onRequest(req, res) {
-        console.log('request received');
+        console.log('request received from,', req.url);
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end('hi worlk');
     }

@@ -1,7 +1,8 @@
 const querystring = require('querystring'),
-    fs = require('fs');
+    fs = require('fs'),
+    formidable = require('formidable');
 
-function start(res, postData) {
+function start(res) {
     console.log('request handler "start" was called');
 
     const body = '<html>'+
@@ -23,11 +24,26 @@ function start(res, postData) {
     res.end();
 }
 
-function upload(res, postData) {
+function upload(res, req) {
     console.log('request handler "upload" was called');
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.write('you posted ' + querystring.parse(postData).text);
-    res.end();
+
+    const form = new formidable.IncomingForm();
+    console.log('about to parse');
+    form.parse(req, (error, fields, files) => {
+        console.log('parsing done');
+
+        fs.rename(files.upload.path, '/tmp/test.png', (err) => {
+            if (err) {
+                fs.unlink('/tmp/test.png');
+                fs.rename(files.upload.path, '/tmp/test.png');
+            }
+        });
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write('received image: <br/>');
+        res.write('<img src="/show" />');
+        res.end();
+
+    });
 }
 
 function show(res){
